@@ -27,9 +27,6 @@ const CourseTable = () => {
 
   const [chapterCounts, setChapterCounts] = useState([]);
 
-  // const [showChapterFields, setShowChapterFields] = useState(false);
-  // const [showLessionFields, setshowLessionField] = useState(false);
-
   const [chapters,setChapters] = useState([])
 
   const [lessions,setLessions] = useState([])
@@ -41,20 +38,21 @@ const CourseTable = () => {
 
     const id = chapters.length
 
-    updateChapterCount(editIndex !== null ? editIndex : courses.length, id);
+    const updatedCounts = [...chapterCounts];
+    updatedCounts[editIndex !== null ? editIndex : courses.length] =
+      (updatedCounts[editIndex !== null ? editIndex : courses.length] || 0) + 1;
+    setChapterCounts(updatedCounts);    
 
     setChapters([...chapters, id]);
     setChapterTitle([...chapterTitle, '']); 
     setChapterNotes([...chapterNotes, '']); 
     setShowChapterFields(true);
+    
+    setLessionName([]);
+    setLessionDescription([]);
+    setChapterNotesList([]);
 
   }
-
-  const updateChapterCount = (index, count) => {
-    const updatedCounts = [...chapterCounts];
-    updatedCounts[index] = count;
-    setChapterCounts(updatedCounts);
-  };
 
   const onAddLession = (chapterIndex) => {
 
@@ -89,9 +87,21 @@ const CourseTable = () => {
         ]);
       }
 
+      
+
+      setChapterTitle([]);
+      setChapterNotesList([]);
+      setChapters([]);
+      setShowChapterFields(false);
+
+      setLessionName([]);
+      setLessionDescription([]);
+      setChapterNotesList([]);
+      
       setCourseName('');
       setSummarize('');
       setTotalChapter('');
+
     // } else {
     //   alert('Please enter course details.');
     // }
@@ -111,8 +121,6 @@ const CourseTable = () => {
     setCourses(updatedCourses);
   };
 
-  console.log('Courses:', courses);
-
   return (
     <div className='justify-center'>
 
@@ -127,6 +135,7 @@ const CourseTable = () => {
           {(close) => (
 
           <div className='justify-center pl-2'>
+
             <button className="w-7 h-7 rounded-full bg-gray-500 hover:bg-red-500 text-white" 
               onClick={close}>
               &times;
