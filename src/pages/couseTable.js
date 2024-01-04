@@ -31,7 +31,7 @@ const CourseTable = () => {
 
   const [lessions,setLessions] = useState([])
 
-  const [showChapterFields, setShowChapterFields] = useState(false);
+  const [frameChapter, setFrameChapter] = useState(false);
 
 
   const onAddChapter = () => {
@@ -46,11 +46,7 @@ const CourseTable = () => {
     setChapters([...chapters, id]);
     setChapterTitle([...chapterTitle, '']); 
     setChapterNotes([...chapterNotes, '']); 
-    setShowChapterFields(true);
-    
-    setLessionName([]);
-    setLessionDescription([]);
-    setChapterNotesList([]);
+    setFrameChapter(true);
 
   }
 
@@ -62,8 +58,11 @@ const CourseTable = () => {
     };  
     setLessions([...lessions,newLesson]);
     setLessionName([...lessionName, '']);
-    setLessionDescription([...lessionDescription,''])
+    setLessionDescription([...lessionDescription, '']);
+    setChapterNotesList([...chapterNotesList, '']);
+
   }
+
   const handleAddCourse = () => {
     // if (courseName && summarize) {
       if (editIndex !== null) {
@@ -92,7 +91,7 @@ const CourseTable = () => {
       setChapterTitle([]);
       setChapterNotesList([]);
       setChapters([]);
-      setShowChapterFields(false);
+      setFrameChapter(false);
 
       setLessionName([]);
       setLessionDescription([]);
@@ -120,6 +119,39 @@ const CourseTable = () => {
     updatedCourses.splice(index, 1);
     setCourses(updatedCourses);
   };
+
+  const handleCancel = () => {
+
+    setChapterTitle([]);
+    setChapterNotesList([]);
+    setChapters([]);
+    setFrameChapter(false);
+    setLessionName([]);
+    setLessionDescription([]);
+    setChapterNotesList([]);
+
+  };
+
+  const handleCancelChapter = (chapterIndex) => {
+    const updatedChapters = [...chapters];
+    updatedChapters.splice(chapterIndex, 1);
+    setChapters(updatedChapters);
+  
+    const updatedChapterTitles = [...chapterTitle];
+    updatedChapterTitles.splice(chapterIndex, 1);
+    setChapterTitle(updatedChapterTitles);
+  
+    const updatedChapterNotes = [...chapterNotesList];
+    updatedChapterNotes.splice(chapterIndex, 1);
+    setChapterNotesList(updatedChapterNotes);
+
+    
+    if (updatedChapterNotes && updatedChapterNotes.length === 0) {
+      setFrameChapter(false);
+    }
+
+  };
+  
 
   return (
     <div className='justify-center'>
@@ -152,17 +184,23 @@ const CourseTable = () => {
               <div className="flex items-center content-start justify-end space-x-1">
                 <label>Add Chapters {totalChapter}</label>
                 
-                <button className="bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md" 
+                <button className="bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md my-3" 
                 onClick={ onAddChapter }>+ Chapter</button>
               </div>
 
-                <div className={`${showChapterFields ? 'border border border-black-300 py-2 my-3' : ''}`}>
+                <div className={`${frameChapter ? 'border border border-black-300 py-2 my-3' : ''}`}>
                 {
                   chapters.map((chapter, chapterIndex) => (
                     <div key={chapterIndex} className='px-4 m-auto'>
+
+                      <button className = "w-7 h-7 rounded-full bg-gray-500 text-white" 
+                        onClick={()=>[
+                          handleCancelChapter(chapterIndex)
+                        ]}> - </button>
+
                       <Input
                         label={'Title:'}
-                        value={chapterTitle[chapterIndex]}
+                        value={chapterTitle[chapterIndex] || ''}
                         onSet={(newValue) => {
                           const updatedTitles = [...chapterTitle];
                           updatedTitles[chapterIndex] = newValue;
@@ -171,7 +209,7 @@ const CourseTable = () => {
                       />
                       <Input
                         label={'Notes:'}
-                        value={chapterNotesList[chapterIndex]}
+                        value={chapterNotesList[chapterIndex] || ''}
                         onSet={(newValue) => {
                           const updatedNotes = [...chapterNotesList];
                           updatedNotes[chapterIndex] = newValue;
@@ -188,41 +226,45 @@ const CourseTable = () => {
                         </button>
                       </div>
 
-                      {lessions.map((lesson, lessonIndex) => {
-                        if (lesson.chapterIndex === chapterIndex) {
-                          return (
-                            <div key={lessonIndex} className='px-6 m-auto'>
-                              <Input
-                                label={'Lesson name:'}
-                                value={lessionName[lessonIndex]}
-                                onSet={(newValue) => {
-                                  const updatedNames = [...lessionName];
-                                  updatedNames[lessonIndex] = newValue;
-                                  setLessionName(updatedNames);
-                                }}
-                              />
-                              <Input
-                                label={'Description:'}
-                                value={lessionDescription[lessonIndex]}
-                                onSet={(newValue) => {
-                                  const updatedDescriptions = [...lessionDescription];
-                                  updatedDescriptions[lessonIndex] = newValue;
-                                  setLessionDescription(updatedDescriptions);
-                                }}
-                              />
-                            </div>
-                          );
-                        }
-                        return null;
-                      })}
+                        {lessions.map((lesson, lessonIndex) => {
+                          if (lesson.chapterIndex === chapterIndex) {
+                            return (
+                              <div key={lessonIndex} className='px-6 m-auto'>
+                                {/* <button className = "bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full" 
+                                  onClick={handleCancelLession}> - </button> */}
+                                <Input
+                                  label={'Lesson name:'}
+                                  value={lessionName[lessonIndex]|| ''}
+                                  onSet={(newValue) => {
+                                    const updatedNames = [...lessionName];
+                                    updatedNames[lessonIndex] = newValue;
+                                    setLessionName(updatedNames);
+                                  }}
+                                />
+                                <Input
+                                  label={'Description:'}
+                                  value={lessionDescription[lessonIndex]|| ''}
+                                  onSet={(newValue) => {
+                                    const updatedDescriptions = [...lessionDescription];
+                                    updatedDescriptions[lessonIndex] = newValue;
+                                    setLessionDescription(updatedDescriptions);
+                                  }}
+                                />  
+
+                              </div>
+                            );
+                          }
+                          return null;
+                        })
+                      }
                     </div>
                   ))
                 }
                 </div>
               
-              <div>
+              <div className='my-4 space-x-4 '>
                 <button
-                  className="bg-gray-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded-l mr-2"
+                  className="bg-gray-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded-l "
                   onClick={() => {
                     handleAddCourse();
                     close();}}>
@@ -231,7 +273,7 @@ const CourseTable = () => {
 
                 <button
                   className="bg-gray-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded-l"
-                  onClick={close}>
+                  onClick={() => {handleCancel();close()}}>
                   Cancel
                 </button>
               </div>
@@ -256,7 +298,7 @@ const CourseTable = () => {
 
           <tbody>
             {courses.map((course, index) =>(
-              // const chapterCount = Array.isArray(course.chapters) ? course.chapters.length : 0 ;
+              
               <tr key={index}>
                 <td className='border border-gray-700'>{course.name}</td>
                 <td className='border border-gray-700'>{course.summarize}</td>
