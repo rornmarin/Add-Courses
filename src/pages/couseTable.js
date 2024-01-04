@@ -6,15 +6,27 @@ import Input from '../components/input';
 
 const CourseTable = () => {
   const [courseName, setCourseName] = useState('');
+
   const [summarize, setSummarize] = useState('');
+
   const [totalChapter, setTotalChapter] = useState('');
+  
   const [courses, setCourses] = useState([]);
+
   const [editIndex, setEditIndex] = useState(null);
+
   const [chapterTitle, setChapterTitle] = useState('');
+
   const [chapterNotes, setChapterNotes] = useState('');
+
   const [lessionName, setLessionName] = useState('');
+
   const [chapterNotesList, setChapterNotesList] = useState([]);
+  
   const [lessionDescription, setLessionDescription] = useState('');
+
+  const [chapterCounts, setChapterCounts] = useState([]);
+
   // const [showChapterFields, setShowChapterFields] = useState(false);
   // const [showLessionFields, setshowLessionField] = useState(false);
 
@@ -22,16 +34,27 @@ const CourseTable = () => {
 
   const [lessions,setLessions] = useState([])
 
+  const [showChapterFields, setShowChapterFields] = useState(false);
+
 
   const onAddChapter = () => {
 
     const id = chapters.length
 
+    updateChapterCount(editIndex !== null ? editIndex : courses.length, id);
+
     setChapters([...chapters, id]);
     setChapterTitle([...chapterTitle, '']); 
     setChapterNotes([...chapterNotes, '']); 
+    setShowChapterFields(true);
 
   }
+
+  const updateChapterCount = (index, count) => {
+    const updatedCounts = [...chapterCounts];
+    updatedCounts[index] = count;
+    setChapterCounts(updatedCounts);
+  };
 
   const onAddLession = (chapterIndex) => {
 
@@ -88,43 +111,46 @@ const CourseTable = () => {
     setCourses(updatedCourses);
   };
 
-
+  console.log('Courses:', courses);
 
   return (
-    <div className='center'>
+    <div className='justify-center'>
+
       <h1>Courses</h1>
       
       <div className="relative " >
+
       <Popup className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 "
         position={'center'}
         modal 
-        trigger={<button className="bg-blue-500 text-white px-4 py-2 rounded-md absolute top-0 right-0 mt-4 mr-10 ">Add</button>} closeOnDocumentClick={false}>
+        trigger={<button className="bg-blue-500 text-white px-4 py-2 rounded-md absolute top-0 right-0 mt-4 mr-14 ">Add</button>} closeOnDocumentClick={false}>
           {(close) => (
 
-          <div >
+          <div className='justify-center pl-2'>
             <button className="w-7 h-7 rounded-full bg-gray-500 hover:bg-red-500 text-white" 
               onClick={close}>
               &times;
             </button>
 
-            <div className="popup_inner overflow-y-scroll h-[600px]">
+            <div className="popup_inner overflow-y-scroll h-[600px] pr-2">
 
-              <h2>{editIndex !== null ? 'Edit Course' : 'Add Course'}</h2>
+              <h2 className="text-center font-bold text-blue-500 text-2xl" >{editIndex !== null ? 'Edit Course' : 'Add Course'}</h2>
 
               <Input label={'Name:'} value={courseName} onSet={setCourseName}/>
 
               <Input label={"Summarize:"} value={summarize} onSet={setSummarize} />
 
-              <div className="flex items-center justify-between">
-                <label>Total Chapters {totalChapter}</label>
+              <div className="flex items-center content-start justify-end space-x-1">
+                <label>Add Chapters {totalChapter}</label>
                 
-                <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l" onClick={ onAddChapter }>+ Chapter</button>
+                <button className="bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md" 
+                onClick={ onAddChapter }>+ Chapter</button>
               </div>
 
-                <div>
+                <div className={`${showChapterFields ? 'border border border-black-300 py-2 my-3' : ''}`}>
                 {
                   chapters.map((chapter, chapterIndex) => (
-                    <div key={chapterIndex}>
+                    <div key={chapterIndex} className='px-4 m-auto'>
                       <Input
                         label={'Title:'}
                         value={chapterTitle[chapterIndex]}
@@ -144,10 +170,10 @@ const CourseTable = () => {
                         }}
                       />
 
-                      <div className="flex items-center justify-between">
-                        <label>Lessons</label>
+                      <div className="flex items-center justify-end content-start space-x-1">
+                        <label> Add Lessons </label>
                         <button
-                          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+                          className="bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md"
                           onClick={() => onAddLession(chapterIndex)}>
                           + Lesson
                         </button>
@@ -156,7 +182,7 @@ const CourseTable = () => {
                       {lessions.map((lesson, lessonIndex) => {
                         if (lesson.chapterIndex === chapterIndex) {
                           return (
-                            <div key={lessonIndex} className='w-[400px] m-auto'>
+                            <div key={lessonIndex} className='px-6 m-auto'>
                               <Input
                                 label={'Lesson name:'}
                                 value={lessionName[lessonIndex]}
@@ -183,103 +209,11 @@ const CourseTable = () => {
                     </div>
                   ))
                 }
-
-                {/* {
-                  chapters.map((chapter, index) => (
-                    <div key={index}>
-                      <Input
-                        label={'Title:'}
-                        value={chapterTitle[index]}
-                        onSet={(newValue) => {
-                          const updatedTitles = [...chapterTitle];
-                          updatedTitles[index] = newValue;
-                          setChapterTitle(updatedTitles);
-                        }}
-                      />
-                      <Input
-                        label={'Notes:'}
-                        value={chapterNotesList[index]}
-                        onSet={(newValue) => {
-                          const updatedNotes = [...chapterNotesList];
-                          updatedNotes[index] = newValue;
-                          setChapterNotesList(updatedNotes);
-                        }}
-                      />
-
-                      <div className="flex items-center justify-between">
-                        <label>Lession</label>
-                        <button
-                          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
-                          onClick={onAddLession}>
-                          + Lession
-                        </button>
-                      </div>
-                      {
-                        lessions.map((lession, index) => (
-                          <div key={index} className='w-[400px] m-auto'>
-                            <Input
-                              label={'Lesson name:'}
-                              value={lessionName[index]}
-                              onSet={(newValue) => {
-                                const updatedNames = [...lessionName];
-                                updatedNames[index] = newValue;
-                                setLessionName(updatedNames);
-                              }}
-                            />
-                            <Input
-                              label={'Description:'}
-                              value={lessionDescription[index]}
-                              onSet={(newValue) => {
-                                const updatedDescriptions = [...lessionDescription];
-                                updatedDescriptions[index] = newValue;
-                                setLessionDescription(updatedDescriptions);
-                              }}
-                            />
-                           
-                          </div>
-                        ))
-                      }
-                    </div>
-                  ))
-                } */}
-
-                  {/* {
-                    chapters.map(chapter => {
-                      return(
-                        <div>
-                          <Input label={'Title:'} value={chapterTitle} onSet={setChapterTitle} />
-                          <Input label={'Notes:'} value={chapterNotes} onSet={setChapterNotes} />
-
-                          <div className="flex items-center justify-between">
-                          <label>Lession</label>
-                          <button
-                            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
-                            onClick={onAddLession}>
-                            + Lession
-                          </button>
-                          </div>
-                          {
-                            lessions.map(lession => {
-                              return (
-                                <div className='w-[400px] m-auto'> 
-                        
-                                    <Input label={'Lesstion name:'} value={lessionName} onSet={setLessionName}/>
-                                    <Input label={'Description:'} value={lessionDescription} onSet={setLessionDescription} />
-                                    
-                                </div>
-                              )
-                            })
-                          }
-                        
-                        </div>
-                      )
-                    })
-                  } */}
                 </div>
               
               <div>
                 <button
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l mr-2"
+                  className="bg-gray-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded-l mr-2"
                   onClick={() => {
                     handleAddCourse();
                     close();}}>
@@ -287,7 +221,7 @@ const CourseTable = () => {
                 </button>
 
                 <button
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+                  className="bg-gray-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4 rounded-l"
                   onClick={close}>
                   Cancel
                 </button>
@@ -301,7 +235,7 @@ const CourseTable = () => {
 
       <div className="w-full flex items-center justify-center">
 
-        <table  className="table-auto border-collapse mx-auto mt-20 text-sm text-left rtl:text-right text-black-200 dark:text-black-200">
+        <table  className="table-auto mx-auto mt-20 text-sm text-left rtl:text-right text-black-200 dark:text-black-200">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col">Name</th>
@@ -312,12 +246,13 @@ const CourseTable = () => {
           </thead>
 
           <tbody>
-            {courses.map((course, index) => (
+            {courses.map((course, index) =>(
+              // const chapterCount = Array.isArray(course.chapters) ? course.chapters.length : 0 ;
               <tr key={index}>
-                <td>{course.name}</td>
-                <td>{course.summarize}</td>
-                <td>{course.chapters.length}</td>
-                <td>
+                <td className='border border-gray-700'>{course.name}</td>
+                <td className='border border-gray-700'>{course.summarize}</td>
+                <td className='border border-gray-700'>{chapterCounts[index] || 0}</td>
+                <td className='border border-gray-700'>
                   <button onClick={() => handleEdit(index)}>Edit /</button>
                   <button onClick={() => handleDelete(index)}>Delete</button>
                 </td>
