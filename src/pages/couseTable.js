@@ -5,33 +5,23 @@ import 'reactjs-popup/dist/index.css';
 import Input from '../components/input';
 
 const CourseTable = () => {
-  const [courseName, setCourseName] = useState('');
 
+  const [courses, setCourses] = useState([]);
+  const [courseName, setCourseName] = useState('');
   const [summarize, setSummarize] = useState('');
 
-  const [totalChapter, setTotalChapter] = useState('');
-  
-  const [courses, setCourses] = useState([]);
-
-  const [editIndex, setEditIndex] = useState(null);
-
   const [chapterTitle, setChapterTitle] = useState('');
-
   const [chapterNotes, setChapterNotes] = useState('');
+  const [chapterCounts, setChapterCounts] = useState([]);
+  const [chapterNotesList, setChapterNotesList] = useState([]);
 
   const [lessionName, setLessionName] = useState('');
-
-  const [chapterNotesList, setChapterNotesList] = useState([]);
-  
   const [lessionDescription, setLessionDescription] = useState('');
-
-  const [chapterCounts, setChapterCounts] = useState([]);
-
   const [chapters,setChapters] = useState([])
-
   const [lessions,setLessions] = useState([])
 
   const [frameChapter, setFrameChapter] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
 
   const [btDone, setBtDone] = useState(false);
 
@@ -45,9 +35,11 @@ const CourseTable = () => {
           summarize: summarize,
           chapters: courses[editIndex].chapters || [],
         };
+
         setCourses(updatedCourses);
         setEditIndex(null);
       } else {
+
         setCourses([
           ...courses,
           {
@@ -69,13 +61,12 @@ const CourseTable = () => {
       
       setCourseName('');
       setSummarize('');
-      setTotalChapter('');
+
 
     // } else {
     //   alert('Please enter course details.');
     // }
   };
-
   const onAddChapter = () => {
 
     const id = chapters.length
@@ -83,8 +74,9 @@ const CourseTable = () => {
     const updatedCounts = [...chapterCounts];
     updatedCounts[editIndex !== null ? editIndex : courses.length] =
       (updatedCounts[editIndex !== null ? editIndex : courses.length] || 0) + 1;
-    setChapterCounts(updatedCounts);    
 
+    setChapterCounts(updatedCounts);    
+    console.log(updatedCounts)
     setChapters([...chapters, id]);
     setChapterTitle([...chapterTitle, '']); 
     setChapterNotes([...chapterNotes, '']); 
@@ -110,7 +102,6 @@ const CourseTable = () => {
     const courseToEdit = courses[index];
     setCourseName(courseToEdit.name);
     setSummarize(courseToEdit.summarize);
-    setTotalChapter(courseToEdit.chapters.length);
     setEditIndex(index);
   };
 
@@ -129,6 +120,7 @@ const CourseTable = () => {
     setLessionName([]);
     setLessionDescription([]);
     setChapterNotesList([]);
+    setChapterCounts([]);
 
   };
 
@@ -147,11 +139,8 @@ const CourseTable = () => {
 
   };
 
-  const handleDone = () => {
-    let totalChapters = chapterTitle.length;
-    // let totalLessons = lessionName.length;
+  const handleBtnDone = () => {
 
-    setTotalChapter(totalChapters);
     setChapterTitle([]);
     setChapterNotesList([]);
     setChapters([]);
@@ -162,17 +151,21 @@ const CourseTable = () => {
     setBtDone(false);
   };
 
+  const handleBtnCancelChapter = (chapterIndex) => {
+
+  };
+
   return (
     <div className='justify-center'>
 
-      <h1 className='text-3xl my-5'>Add Courses</h1>
+      <h1 className='text-3xl my-5 font-sans'>Add Courses</h1>
       
       <div className="relative " >
 
       <Popup className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 "
         position={'center'}
         modal 
-        trigger={<button className="bg-blue-500 text-white px-10 py-3 rounded-md w-[100px] float-end mr-10 mb-5">
+        trigger={<button className="bg-blue-500 text-white px-10 py-3 rounded-md w-[100px] float-end mr-[65px] mb-5">
 
           Add</button>} closeOnDocumentClick={false}>
           {(close) => (
@@ -195,20 +188,22 @@ const CourseTable = () => {
               <Input label={"Summarize:"} value={summarize} onSet={setSummarize} />
 
               <div className="flex items-center content-start justify-start space-x-1">
-                <label>{totalChapter} Chapters </label>
+                <label> Chapters </label>
                 
                 <button className="bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md my-3" 
                 onClick={ onAddChapter }>+ Chapter</button>
               </div>
 
-                <div className={`${frameChapter ? 'border border border-black-300 pb-14 pt-5 my-3' : ''}`}>
+                <div className={`${frameChapter && chapters.length > 0 ? 'border border border-black-300 pb-14 pt-5 my-3' : ''}`}>
                 {
                   chapters.map((chapter, chapterIndex) => (
                     <div key={chapterIndex} className='px-4 m-auto'>
   
                       <button className = "w-7 h-7 rounded-full bg-gray-400 text-white ml-2 float-end my-2 text-xl" 
 
-                        onClick={()=>[]}> - </button>
+                        onClick={() => {
+                          // handleBtnCancelChapter(chapterIndex)
+                          }}> - </button>
 
                       <Input
                         label={'Title:'}
@@ -276,11 +271,15 @@ const CourseTable = () => {
                   )) 
                 }
                 
-                <button
+                {
+                  chapters.length > 0 && (
+                    <button
                   className={`${btDone ? "bg-gray-300 hover:bg-blue-400 text-gray-800 font-bold py-2 mr-4 mb-2 mt-2 w-[80px] float-end rounded-l" : ""}`}
-                  onClick={handleDone}>
+                  onClick={handleBtnDone}>
                   {`${btDone? "Done":''}`}
                 </button>
+                  )
+                }
 
               </div>
               
