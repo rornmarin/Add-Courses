@@ -33,35 +33,7 @@ const CourseTable = () => {
 
   const [frameChapter, setFrameChapter] = useState(false);
 
-
-  const onAddChapter = () => {
-
-    const id = chapters.length
-
-    const updatedCounts = [...chapterCounts];
-    updatedCounts[editIndex !== null ? editIndex : courses.length] =
-      (updatedCounts[editIndex !== null ? editIndex : courses.length] || 0) + 1;
-    setChapterCounts(updatedCounts);    
-
-    setChapters([...chapters, id]);
-    setChapterTitle([...chapterTitle, '']); 
-    setChapterNotes([...chapterNotes, '']); 
-    setFrameChapter(true);
-
-  }
-
-  const onAddLession = (chapterIndex) => {
-
-    const newLesson = {
-      chapterIndex: chapterIndex,
-
-    };  
-    setLessions([...lessions,newLesson]);
-    setLessionName([...lessionName, '']);
-    setLessionDescription([...lessionDescription, '']);
-    setChapterNotesList([...chapterNotesList, '']);
-
-  }
+  const [btDone, setBtDone] = useState(false);
 
   const handleAddCourse = () => {
     // if (courseName && summarize) {
@@ -86,8 +58,6 @@ const CourseTable = () => {
         ]);
       }
 
-      
-
       setChapterTitle([]);
       setChapterNotesList([]);
       setChapters([]);
@@ -105,6 +75,36 @@ const CourseTable = () => {
     //   alert('Please enter course details.');
     // }
   };
+
+  const onAddChapter = () => {
+
+    const id = chapters.length
+
+    const updatedCounts = [...chapterCounts];
+    updatedCounts[editIndex !== null ? editIndex : courses.length] =
+      (updatedCounts[editIndex !== null ? editIndex : courses.length] || 0) + 1;
+    setChapterCounts(updatedCounts);    
+
+    setChapters([...chapters, id]);
+    setChapterTitle([...chapterTitle, '']); 
+    setChapterNotes([...chapterNotes, '']); 
+    setFrameChapter(true);
+    setBtDone(true)
+
+  }
+
+  const onAddLession = (chapterIndex) => {
+
+    const newLesson = {
+      chapterIndex: chapterIndex,
+
+    };  
+    setLessions([...lessions,newLesson]);
+    setLessionName([...lessionName, '']);
+    setLessionDescription([...lessionDescription, '']);
+    setChapterNotesList([...chapterNotesList, '']);
+
+  }
 
   const handleEdit = (index) => {
     const courseToEdit = courses[index];
@@ -132,44 +132,57 @@ const CourseTable = () => {
 
   };
 
-  const handleCancelChapter = (chapterIndex) => {
-    const updatedChapters = [...chapters];
-    updatedChapters.splice(chapterIndex, 1);
-    setChapters(updatedChapters);
-  
-    const updatedChapterTitles = [...chapterTitle];
-    updatedChapterTitles.splice(chapterIndex, 1);
-    setChapterTitle(updatedChapterTitles);
-  
-    const updatedChapterNotes = [...chapterNotesList];
-    updatedChapterNotes.splice(chapterIndex, 1);
-    setChapterNotesList(updatedChapterNotes);
+  const handleClose = () => {
 
-    
-    if (updatedChapterNotes && updatedChapterNotes.length === 0) {
-      setFrameChapter(false);
-    }
+    setCourseName('');
+    setSummarize('');
+    setChapterTitle([]);
+    setChapterNotesList([]);
+    setChapters([]);
+    setFrameChapter(false);
+    setLessionName([]);
+    setLessionDescription([]);
+    setChapterNotesList([]);
+    setBtDone(false);
 
   };
-  
+
+  const handleDone = () => {
+    let totalChapters = chapterTitle.length;
+    // let totalLessons = lessionName.length;
+
+    setTotalChapter(totalChapters);
+    setChapterTitle([]);
+    setChapterNotesList([]);
+    setChapters([]);
+    setLessionName([]);
+    setLessionDescription([]);
+    setChapterNotesList([]);
+    setFrameChapter(false);
+    setBtDone(false);
+  };
 
   return (
     <div className='justify-center'>
 
-      <h1>Courses</h1>
+      <h1 className='text-3xl my-5'>Add Courses</h1>
       
       <div className="relative " >
 
       <Popup className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 "
         position={'center'}
         modal 
-        trigger={<button className="bg-blue-500 text-white px-4 py-2 rounded-md absolute top-0 right-0 mt-4 mr-14 ">Add</button>} closeOnDocumentClick={false}>
+        trigger={<button className="bg-blue-500 text-white px-10 py-3 rounded-md w-[100px] float-end mr-10 mb-5">
+
+          Add</button>} closeOnDocumentClick={false}>
           {(close) => (
 
           <div className='justify-center pl-2'>
 
             <button className="w-7 h-7 rounded-full bg-gray-500 hover:bg-red-500 text-white" 
-              onClick={close}>
+              onClick={() => {
+                handleClose(); close()
+              }}>
               &times;
             </button>
 
@@ -181,22 +194,21 @@ const CourseTable = () => {
 
               <Input label={"Summarize:"} value={summarize} onSet={setSummarize} />
 
-              <div className="flex items-center content-start justify-end space-x-1">
-                <label>Add Chapters {totalChapter}</label>
+              <div className="flex items-center content-start justify-start space-x-1">
+                <label>{totalChapter} Chapters </label>
                 
                 <button className="bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md my-3" 
                 onClick={ onAddChapter }>+ Chapter</button>
               </div>
 
-                <div className={`${frameChapter ? 'border border border-black-300 py-2 my-3' : ''}`}>
+                <div className={`${frameChapter ? 'border border border-black-300 pb-14 pt-5 my-3' : ''}`}>
                 {
                   chapters.map((chapter, chapterIndex) => (
                     <div key={chapterIndex} className='px-4 m-auto'>
+  
+                      <button className = "w-7 h-7 rounded-full bg-gray-400 text-white ml-2 float-end my-2 text-xl" 
 
-                      <button className = "w-7 h-7 rounded-full bg-gray-500 text-white" 
-                        onClick={()=>[
-                          handleCancelChapter(chapterIndex)
-                        ]}> - </button>
+                        onClick={()=>[]}> - </button>
 
                       <Input
                         label={'Title:'}
@@ -216,9 +228,9 @@ const CourseTable = () => {
                           setChapterNotesList(updatedNotes);
                         }}
                       />
-
-                      <div className="flex items-center justify-end content-start space-x-1">
-                        <label> Add Lessons </label>
+             
+                      <div className="flex items-center justify-start content-start space-x-1">
+                        <label> Lessons </label>
                         <button
                           className="bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md"
                           onClick={() => onAddLession(chapterIndex)}>
@@ -230,8 +242,10 @@ const CourseTable = () => {
                           if (lesson.chapterIndex === chapterIndex) {
                             return (
                               <div key={lessonIndex} className='px-6 m-auto'>
-                                {/* <button className = "bg-gray-400 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full" 
-                                  onClick={handleCancelLession}> - </button> */}
+
+                                <button className = "w-7 h-7 rounded-full bg-gray-400 text-white ml-2 float-end my-2 text-xl" 
+                                  onClick={()=>[]}> - </button>
+
                                 <Input
                                   label={'Lesson name:'}
                                   value={lessionName[lessonIndex]|| ''}
@@ -257,10 +271,18 @@ const CourseTable = () => {
                           return null;
                         })
                       }
+                      
                     </div>
-                  ))
+                  )) 
                 }
-                </div>
+                
+                <button
+                  className={`${btDone ? "bg-gray-300 hover:bg-blue-400 text-gray-800 font-bold py-2 mr-4 mb-2 mt-2 w-[80px] float-end rounded-l" : ""}`}
+                  onClick={handleDone}>
+                  {`${btDone? "Done":''}`}
+                </button>
+
+              </div>
               
               <div className='my-4 space-x-4 '>
                 <button
@@ -286,7 +308,7 @@ const CourseTable = () => {
 
       <div className="w-full flex items-center justify-center">
 
-        <table  className="table-auto mx-auto mt-20 text-sm text-left rtl:text-right text-black-200 dark:text-black-200">
+        <table  className="table-auto mx-auto text-sm text-left rtl:text-right text-black-200 dark:text-black-200">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col">Name</th>
